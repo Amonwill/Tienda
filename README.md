@@ -73,3 +73,12 @@ Despues de generar las migraciones, genera los controlladores a traves de la con
     php artisan make:controller ProveedorController 
 ```
 
+## Ventanas
+
+### Ventas
+![alt text](image.png)
+
+### Cajas
+![alt text](image-1.png)
+![alt text](image-2.png)
+![alt text](image-3.png)
