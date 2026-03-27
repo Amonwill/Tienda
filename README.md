@@ -76,9 +76,17 @@ Despues de generar las migraciones, genera los controlladores a traves de la con
 ## Ventanas
 
 ### Ventas
-![alt text](image.png)
+Ventana principal de ventas
+<img width="1919" height="911" alt="image" src="https://github.com/user-attachments/assets/2fb3cfea-c68b-46de-9677-2876f0d329df" />
+
 
 ### Cajas
-![alt text](image-1.png)
-![alt text](image-2.png)
-![alt text](image-3.png)
+Abrir una caja
+<img width="1919" height="911" alt="image" src="https://github.com/user-attachments/assets/c537b5d6-a4fa-48b6-b247-0326f4cc85ae" />
+Caja abierta 
+<img width="1919" height="911" alt="image" src="https://github.com/user-attachments/assets/2ad0a42d-f26c-4ceb-85be-f3fc99ce4949" />
+Corte de caja
+<img width="1919" height="911" alt="image" src="https://github.com/user-attachments/assets/ce7ac7b2-34c0-41e7-b8de-3811f577b45f" />
+
+
+
