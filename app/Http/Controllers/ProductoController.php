@@ -6,18 +6,16 @@ use Inertia\Inertia;
 
 class ProductoController extends Controller
 {
+    // Controlador para gestionar productos usando el procedimiento almacenado 'sp_gestion_inventario'
     public function index()
     {
-        // Llamamos al procedimiento 'ver' de tu query
         $productos = DB::select('EXEC sp_gestion_inventario @accion = ?', ['ver']);
         return Inertia::render('Products/Index', [
             'products' => $productos
         ]);
     }
-
     public function store(Request $request)
     {
-        // Usamos el procedimiento 'agregar'
         DB::statement('EXEC sp_gestion_inventario 
             @accion = ?, @nombre = ?, @desc = ?, @id_prov = ?, 
             @p_compra = ?, @p_venta = ?, @cant = ?, @num_lote = ?, @caducidad = ?', 

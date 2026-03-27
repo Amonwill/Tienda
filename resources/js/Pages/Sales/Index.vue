@@ -4,18 +4,18 @@ import { ref, computed } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
-    products: Array, // Lista de productos enviada desde el controlador
-    activeSession: Object // La sesión de caja abierta
+    products: Array, 
+    activeSession: Object 
 });
 
-// --- ESTADO ---
+// ESTADOS DE LA VENTA
 const search = ref('');
 const cart = ref([]);
 const paymentAmount = ref(0);
 const showTicketModal = ref(false);
 const lastSaleResponse = ref(null);
 
-// --- LÓGICA DE BÚSQUEDA ---
+// LOGICA DE FILTRADO DE PRODUCTOS
 const filteredProducts = computed(() => {
     if (!search.value) return [];
     return props.products.filter(p => 
@@ -23,7 +23,7 @@ const filteredProducts = computed(() => {
     );
 });
 
-// --- ACCIONES DEL CARRITO ---
+// CARRITO DE COMPRAS Y PROCESO DE VENTA
 const addToCart = (product) => {
     const item = cart.value.find(i => i.ID_Producto === product.ID_Producto);
     if (item) {
@@ -40,13 +40,12 @@ const totalCart = computed(() =>
     cart.value.reduce((acc, item) => acc + (item.Precio_Venta * item.quantity), 0)
 );
 
-// --- PROCESAR VENTA ---
+// VENTA: ENVÍO DE DATOS AL BACKEND
 const form = useForm({
-    id_cliente: 1, // Cliente General por defecto
+    id_cliente: 1, 
     pago_con: 0,
-    id_producto: null,
-    cantidad: null,
-    id_session: props.activeSession?.ID_Session
+    id_session: props.activeSession?.ID_Session,
+    items: [], 
 });
 
 const processSale = () => {
@@ -54,24 +53,19 @@ const processSale = () => {
         alert("El pago es insuficiente");
         return;
     }
-
-    // Para este ejemplo básico, procesamos el primer item del carrito 
-    // (Tu SP sp_registrar_venta recibe un producto a la vez)
-    const item = cart.value[0]; 
-    
     form.pago_con = paymentAmount.value;
-    form.id_producto = item.ID_Producto;
-    form.cantidad = item.quantity;
+    form.items = cart.value; 
+    form.id_session = props.activeSession?.ID_Session;
 
     form.post(route('ventas.store'), {
-        onSuccess: (page) => {
+        onSuccess: () => {
             lastSaleResponse.value = {
                 total: totalCart.value,
                 pago: paymentAmount.value,
                 cambio: paymentAmount.value - totalCart.value,
                 items: [...cart.value]
             };
-            showTicketModal.ref = true;
+            showTicketModal.value = true;
             cart.value = [];
             paymentAmount.value = 0;
         },
@@ -80,7 +74,7 @@ const processSale = () => {
 </script>
 
 <template>
-    <Head title="Ventas - La Moderna" />
+    <Head title="Ventas - Tienda" />
 
     <AuthenticatedLayout>
         <template #header>

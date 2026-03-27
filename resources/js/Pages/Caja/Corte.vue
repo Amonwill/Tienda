@@ -1,34 +1,29 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { ref, computed } from 'vue';
-import { Head, useForm } from '@inertiajs/vue-base';
+import { Head, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
-    sesion: Object, // Datos de la sesión actual de Caja_General
-    ventasResumen: Array // Datos provenientes de sp_corte_por_caja
+    sesion: Object, 
+    ventasResumen: Array
 });
 
-// --- ESTADO ---
 const efectivoContado = ref(0);
 const mostrarResumenFinal = ref(false);
 
-// --- CÁLCULOS ---
-// Saldo esperado = Inicial + Ingresos - Egresos
+// Cálculo del saldo esperado
 const saldoEsperado = computed(() => {
     return (props.sesion.Saldo_Inicial + props.sesion.Ingresos_Totales) - props.sesion.Egresos_Totales;
 });
-
-// Diferencia (Faltante o Sobrante)
 const diferencia = computed(() => {
     return efectivoContado.value - saldoEsperado.value;
 });
 
-// --- PROCESAR CIERRE ---
+// Cerrar caja y registrar corte
 const formCierre = useForm({
     id_session: props.sesion.ID_Session,
     saldo_final_real: 0
 });
-
 const cerrarCaja = () => {
     if (confirm('¿Estás seguro de cerrar el turno? No podrás registrar más ventas en esta sesión.')) {
         formCierre.saldo_final_real = efectivoContado.value;
