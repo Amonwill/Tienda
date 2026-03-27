@@ -10,9 +10,9 @@ use App\Http\Controllers\CajaController;
 use App\Http\Controllers\ProveedorController;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
+    return Inertia::render('Bienvenido', [
+        'canLogin' => Route::has('Iniciar sesión'),
+        'canRegister' => Route::has('Registrarse'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
@@ -37,6 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/caja', [CajaController::class, 'index'])->name('caja.index');
     Route::post('/caja/abrir', [CajaController::class, 'abrirCaja'])->name('caja.abrir');
     Route::post('/caja/cerrar', [CajaController::class, 'cerrarCaja'])->name('caja.cerrar');
+    Route::get('/caja/corte', [CajaController::class, 'showCorte'])->name('caja.corte');
     //Rutas para proveedores
     Route::get('/proveedores', [ProveedorController::class, 'index'])->name('proveedores.index');
     Route::post('/proveedores', [ProveedorController::class, 'store'])->name('proveedores.store');

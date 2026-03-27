@@ -4,9 +4,11 @@ use App\Models\Caja_General;
 use App\Models\Cajas_Cat;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 class CajaController extends Controller
 {
+    //Vista para abrir caja
     public function index()
     {
         return Inertia::render('Caja/Index', [
@@ -15,24 +17,44 @@ class CajaController extends Controller
         ]);
     }
 
+    //Funcion para abrir l caja
     public function abrirCaja(Request $request)
     {
         Caja_General::create([
             'ID_Caja_Fisica' => $request->id_caja_fisica,
             'Saldo_Inicial' => $request->saldo_inicial,
-            'Estado_Caja' => 1
+            'Fecha_Apertura' => now(), 
+            'Estado_Caja' => 1,
+            'Ingresos_Totales' => 0,
+            'Egresos_Totales' => 0
         ]);
-        return redirect()->back();
+        return redirect()->route('ventas.index'); 
     }
+
+    // Vista para mostrar el corte de caja
+    public function showCorte()
+    {
+        $sesionActiva = Caja_General::where('Estado_Caja', 1)->first();
+        if (!$sesionActiva) {
+            return redirect()->route('caja.index')->with('error', 'No hay ninguna caja abierta actualmente.');
+        }
+        return Inertia::render('Caja/Corte', [
+            'sesion' => $sesionActiva,
+            'ventasResumen' => [] 
+        ]);
+    }
+
+    // Función para cerrar la caja
     public function cerrarCaja(Request $request)
     {
         $sesion = Caja_General::findOrFail($request->id_session);
-        // Actualizamos la sesión con fecha de cierre y estado 0
+        
         $sesion->update([
             'Fecha_Cierre' => now(),
             'Estado_Caja' => 0,
-            // Aquí podrías guardar también el saldo_final_real si quieres auditar la diferencia
+            'Egresos_Totales' => $sesion->Egresos_Totales, 
+            'Ingresos_Totales' => $sesion->Ingresos_Totales 
         ]);
-        return redirect()->route('dashboard')->with('success', 'Turno cerrado con éxito.');
+        return redirect()->route('dashboard')->with('success', 'Turno cerrado y guardado con éxito.');
     }
 }
