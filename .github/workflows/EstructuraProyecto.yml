@@ -1,0 +1,26 @@
+#Iniciamos con name y el nombre del flujo de trabajo
+name: Estructura del proyecto
+
+#Indicamos cuando se ejecutara el flujo
+on: 
+
+  #Ejecucion de manera manual del flujo
+  workflow_dispatch: 
+  #En caso de querer definir un tiempo especifico es con:
+  #schedule:
+     #- cron: "16 17 4 7 5"
+  # O con una accion especifica como push, commit, delete, etc
+    # push:
+
+jobs:
+
+    Obtener_estructura:
+        runs-on: windows-latest
+        steps:
+        #Obtenemos la informacion del repositorio
+         - name: Checkout
+           uses: actions/checkout@v6.0.2
+         - name: Listar los archivos
+           run: |
+                echo "El repsositorio ${{ github.repository }} contiene los siguientes archivos:"
+                tree
