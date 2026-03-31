@@ -19,3 +19,9 @@ jobs:
     steps:
       - name: Imprime nombre job
         run: echo job 3
+  job-dependiente:
+    runs-on: ubuntu-latest
+    needs: [job-1,job-3]
+    steps:
+      - name: imprime nombre job
+        run: echo Job dependiente
