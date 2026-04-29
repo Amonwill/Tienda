@@ -1,14 +1,15 @@
 <?php
 namespace App\Http\Controllers;
+
 use App\Models\Caja_General;
 use App\Models\Cajas_Cat;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CajaController extends Controller
 {
-    //Vista para abrir caja
     public function index()
     {
         return Inertia::render('Caja/Index', [
@@ -17,7 +18,6 @@ class CajaController extends Controller
         ]);
     }
 
-    //Funcion para abrir l caja
     public function abrirCaja(Request $request)
     {
         Caja_General::create([
@@ -28,33 +28,45 @@ class CajaController extends Controller
             'Ingresos_Totales' => 0,
             'Egresos_Totales' => 0
         ]);
-        return redirect()->route('ventas.index'); 
+        return redirect()->route('caja.index'); 
     }
 
-    // Vista para mostrar el corte de caja
-    public function showCorte()
+    // --- ESTA FUNCIÓN CIERRA LA CAJA REALMENTE ---
+    public function cerrarTurnoAutomatico()
     {
-        $sesionActiva = Caja_General::where('Estado_Caja', 1)->first();
-        if (!$sesionActiva) {
-            return redirect()->route('caja.index')->with('error', 'No hay ninguna caja abierta actualmente.');
+        DB::table('Caja_General')
+            ->where('Estado_Caja', 1)
+            ->update([
+                'Estado_Caja' => 0,
+                'Fecha_Cierre' => now()
+            ]);
+
+        return redirect()->route('caja.index')->with('success', 'Caja cerrada correctamente');
+    }
+
+    public function descargarCorteCaja()
+    {
+        // Solo generamos el PDF de las sesiones de hoy
+        $sesiones = DB::select("
+            SELECT cg.ID_Session, cc.Nombre_Caja, cg.Saldo_Inicial, 
+                   cg.Ingresos_Totales, cg.Egresos_Totales, cg.Fecha_Apertura, cg.Estado_Caja
+            FROM Caja_General cg 
+            JOIN Cajas_Cat cc ON cg.ID_Caja_Fisica = cc.ID_Caja_Fisica 
+            WHERE CAST(cg.Fecha_Apertura AS DATE) = CAST(GETDATE() AS DATE)
+        ");
+
+        foreach ($sesiones as $s) {
+            $s->productos = DB::select("
+                SELECT p.Nombre_Producto, SUM(dv.Cantidad) as total_cant, 
+                       SUM(dv.Cantidad * dv.Precio_Unitario) as subtotal_prod
+                FROM Detalle_Venta dv 
+                JOIN Productos_Cat p ON dv.ID_Producto = p.ID_Producto 
+                JOIN Ventas v ON dv.ID_Venta = v.ID_Venta 
+                WHERE v.ID_Caja = ? 
+                GROUP BY p.Nombre_Producto", [$s->ID_Session]);
         }
-        return Inertia::render('Caja/Corte', [
-            'sesion' => $sesionActiva,
-            'ventasResumen' => [] 
-        ]);
-    }
 
-    // Función para cerrar la caja
-    public function cerrarCaja(Request $request)
-    {
-        $sesion = Caja_General::findOrFail($request->id_session);
-        
-        $sesion->update([
-            'Fecha_Cierre' => now(),
-            'Estado_Caja' => 0,
-            'Egresos_Totales' => $sesion->Egresos_Totales, 
-            'Ingresos_Totales' => $sesion->Ingresos_Totales 
-        ]);
-        return redirect()->route('dashboard')->with('success', 'Turno cerrado y guardado con éxito.');
+        $pdf = Pdf::loadView('pdf.corte_caja', compact('sesiones'));
+        return $pdf->download('Corte_Diario_LaModerna_'.date('d-m-Y').'.pdf');
     }
 }

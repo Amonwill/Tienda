@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\VentaController;
 use App\Http\Controllers\CajaController;
 use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\MetricasController;
 
 Route::get('/', function () {
     return Inertia::render('Bienvenido', [
@@ -27,23 +28,33 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    //Rutas para productos
+    // Rutas para productos (Limpias)
     Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
     Route::post('/productos', [ProductoController::class, 'store'])->name('productos.store');
-    //Rutas para ventas
+    Route::delete('/productos/{id}', [ProductoController::class, 'destroy'])->name('productos.destroy');
+
+    // Rutas para ventas
     Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
     Route::post('/ventas', [VentaController::class, 'store'])->name('ventas.store');
-    //Rutas para caja
+
+    // Rutas para caja
     Route::get('/caja', [CajaController::class, 'index'])->name('caja.index');
     Route::post('/caja/abrir', [CajaController::class, 'abrirCaja'])->name('caja.abrir');
     Route::post('/caja/cerrar', [CajaController::class, 'cerrarCaja'])->name('caja.cerrar');
     Route::get('/caja/corte', [CajaController::class, 'showCorte'])->name('caja.corte');
-    //Rutas para proveedores
+    Route::get('/caja/descargar-corte', [CajaController::class, 'descargarCorteCaja'])->name('caja.descargar.pdf');
+    Route::get('/caja/descargar-pdf', [CajaController::class, 'descargarCorteCaja'])->name('caja.descargar.pdf');
+    Route::post('/caja/cerrar-automatico', [CajaController::class, 'cerrarTurnoAutomatico'])->name('caja.cerrar.automatico');
+
+    // Rutas para proveedores
+    // --- Rutas para proveedores (Limpias y controladas) ---
     Route::get('/proveedores', [ProveedorController::class, 'index'])->name('proveedores.index');
     Route::post('/proveedores', [ProveedorController::class, 'store'])->name('proveedores.store');
     Route::put('/proveedores/{id}', [ProveedorController::class, 'update'])->name('proveedores.update');
     Route::delete('/proveedores/{id}', [ProveedorController::class, 'destroy'])->name('proveedores.destroy');
+    
+    Route::get('/Metricas', [MetricasController::class, 'index'])->name('Metricas.index');
+    Route::get('/Metricas/descargar-semanal', [MetricasController::class, 'descargarResumenSemanal'])->name('Metricas.semanal.pdf');
 });
-
 
 require __DIR__.'/auth.php';

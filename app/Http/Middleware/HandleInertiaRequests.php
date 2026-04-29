@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Illuminate\Support\Facades\DB; // IMPORTANTE: Para interactuar con SQL Server
 
 class HandleInertiaRequests extends Middleware
 {
@@ -29,11 +30,25 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        // 1. Ejecutamos el Procedimiento Almacenado de alertas antes de compartir datos.
+        // Esto asegura que la tabla Bandeja_Alertas esté siempre al día.
+        try {
+            DB::statement("EXEC sp_generar_alertas");
+        } catch (\Exception $e) {
+            // Loguear error si es necesario, pero permitir que el sistema siga operando
+        }
+
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
             ],
+            
+            // 2. Compartimos las alertas globalmente con Vue
+            // Accederás a ellas como $page.props.alertas
+            'alertas' => DB::table('Bandeja_Alertas')
+                ->orderBy('Fecha_Generada', 'DESC')
+                ->get(),
         ];
     }
 }

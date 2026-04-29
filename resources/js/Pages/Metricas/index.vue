@@ -9,7 +9,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <Head title="Dashboard - La Moderna" />
+    <Head title="Métricas - La Moderna" />
 
     <AuthenticatedLayout>
         <template #header>
@@ -17,34 +17,32 @@ const props = defineProps({
         </template>
 
         <div class="py-12 bg-gray-50 min-h-screen">
-            <div v-if="stats" class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="bg-white p-8 rounded-3xl shadow-xl border-b-4 border-green-500">
+                    <div class="bg-white p-8 rounded-3xl shadow-xl border-b-4 border-green-500 transform hover:scale-105 transition duration-300">
                         <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ingresos de Hoy</div>
-                        <div class="text-4xl font-black text-gray-900 font-mono mt-2">
-                            ${{ stats.ingresos ? stats.ingresos.toFixed(2) : '0.00' }}
-                        </div>
+                        <div class="text-4xl font-black text-gray-900 font-mono mt-2">${{ stats.ingresos.toFixed(2) }}</div>
                     </div>
 
-                    <div class="bg-white p-8 rounded-3xl shadow-xl border-b-4 border-blue-500">
+                    <div class="bg-white p-8 rounded-3xl shadow-xl border-b-4 border-blue-500 transform hover:scale-105 transition duration-300">
                         <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ventas Realizadas</div>
-                        <div class="text-4xl font-black text-gray-900 font-mono mt-2">
-                            {{ stats.operaciones || 0 }}
-                        </div>
+                        <div class="text-4xl font-black text-gray-900 font-mono mt-2">{{ stats.operaciones }}</div>
                     </div>
 
-                    <div class="bg-white p-8 rounded-3xl shadow-xl border-b-4 border-purple-500">
+                    <div class="bg-white p-8 rounded-3xl shadow-xl border-b-4 border-purple-500 transform hover:scale-105 transition duration-300">
                         <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ticket Promedio</div>
-                        <div class="text-4xl font-black text-gray-900 font-mono mt-2">
-                            ${{ stats.promedio ? stats.promedio.toFixed(2) : '0.00' }}
-                        </div>
+                        <div class="text-4xl font-black text-gray-900 font-mono mt-2">${{ stats.promedio.toFixed(2) }}</div>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
-                    <div class="bg-gray-800 p-4 text-white font-black uppercase text-xs tracking-widest italic">
-                        Productos más vendidos (Histórico)
+                    <div class="bg-gray-800 p-4 text-white font-black uppercase text-xs tracking-widest italic flex justify-between items-center">
+                        <span>Productos más vendidos (Histórico)</span>
+                        <a :href="route('Metricas.semanal.pdf')" target="_blank"
+                            class="bg-white text-gray-800 px-4 py-2 rounded-lg font-black text-[10px] uppercase hover:bg-gray-200 transition shadow-md">
+                            Descargar Resumen Semanal
+                        </a>
                     </div>
                     <div class="p-6">
                         <div v-if="topProductos && topProductos.length > 0">
@@ -55,8 +53,8 @@ const props = defineProps({
                                 </span>
                             </div>
                         </div>
-                        <div v-else class="text-center py-4 text-gray-400 italic text-sm">
-                            No hay datos de ventas registrados aún.
+                        <div v-else class="text-center py-4 text-gray-400 italic">
+                            Sin datos de ventas registrados.
                         </div>
                     </div>
                 </div>

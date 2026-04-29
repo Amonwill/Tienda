@@ -27,6 +27,9 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
+                                <NavLink :href="route('Metricas.index')" :active="route().current('Metricas.index')">
+                                    Métricas
+                                </NavLink>
                                 <NavLink :href="route('productos.index')" :active="route().current('productos.index')">
                                     Productos
                                 </NavLink>
@@ -42,8 +45,42 @@ const showingNavigationDropdown = ref(false);
                             </div>
                         </div>
 
-                        <div class="hidden sm:ms-6 sm:flex sm:items-center">
-                            <div class="relative ms-3">
+                        <div class="hidden sm:ms-6 sm:flex sm:items-center space-x-4">
+                            
+                            <div class="relative">
+                                <Dropdown align="right" width="64">
+                                    <template #trigger>
+                                        <button class="relative p-2 text-gray-400 hover:text-gray-600 transition focus:outline-none">
+                                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                            </svg>
+                                            <span v-if="$page.props.alertas && $page.props.alertas.length > 0" 
+                                                class="absolute top-0 right-0 block h-4 w-4 rounded-full bg-red-600 text-[10px] text-white font-black flex items-center justify-center border-2 border-white">
+                                                {{ $page.props.alertas.length }}
+                                            </span>
+                                        </button>
+                                    </template>
+
+                                    <template #content>
+                                        <div class="p-4 text-xs font-black uppercase text-gray-400 border-b italic tracking-widest">Bandeja de Alertas</div>
+                                        
+                                        <div v-if="$page.props.alertas && $page.props.alertas.length > 0" class="max-h-64 overflow-y-auto">
+                                            <div v-for="alerta in $page.props.alertas" :key="alerta.ID_Alerta" 
+                                                class="p-4 border-b last:border-0 hover:bg-gray-50 transition">
+                                                <p class="text-[9px] font-black uppercase tracking-tighter" :class="alerta.Tipo_Alerta === 'Inventario' ? 'text-red-600' : 'text-orange-500'">
+                                                    {{ alerta.Tipo_Alerta }}
+                                                </p>
+                                                <p class="text-xs text-gray-700 mt-1 font-medium leading-tight">{{ alerta.Mensaje }}</p>
+                                            </div>
+                                        </div>
+                                        <div v-else class="p-8 text-center text-gray-400 italic text-xs">
+                                            No hay alertas pendientes.
+                                        </div>
+                                    </template>
+                                </Dropdown>
+                            </div>
+
+                            <div class="relative">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
@@ -78,6 +115,7 @@ const showingNavigationDropdown = ref(false);
                 <div :class="{'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown}" class="sm:hidden">
                     <div class="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')"> Dashboard </ResponsiveNavLink>
+                        <ResponsiveNavLink :href="route('Metricas.index')" :active="route().current('Metricas.index')"> Métricas </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('productos.index')" :active="route().current('productos.index')"> Productos </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('proveedores.index')" :active="route().current('proveedores.index')"> Proveedores </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('ventas.index')" :active="route().current('ventas.index')"> Ventas </ResponsiveNavLink>

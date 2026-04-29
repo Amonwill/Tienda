@@ -1,52 +1,73 @@
 <?php
+
 namespace App\Http\Controllers;
-use App\Models\Proveedores_Cat;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ProveedorController extends Controller
 {
     public function index()
     {
-        $proveedores = Proveedores_Cat::orderBy('Nombre_Proveedor', 'asc')->get();
+        // Traemos solo los activos para la tabla principal
+        $proveedores = DB::table('Proveedores_Cat')
+            ->where('Proveedor_Activo', 1)
+            ->orderBy('ID_Proveedor', 'desc')
+            ->get();
 
-        return Inertia::render('Providers/Index', [
+        return Inertia::render('proveedores/index', [
             'providers' => $proveedores
         ]);
     }
+
     public function store(Request $request)
     {
         $request->validate([
-            'Nombre_Proveedor' => 'required|string|max:50',
-            'Telefono_Proveedor' => 'required|string|max:15',
-            'Ciudad_Delegacion' => 'required|string|max:40',
-        ]);
-        Proveedores_Cat::create([
-            'Nombre_Proveedor'      => $request->Nombre_Proveedor,
-            'Descripcion_Proveedor' => $request->Descripcion_Proveedor,
-            'Telefono_Proveedor'    => $request->Telefono_Proveedor,
-            'Calle'                 => $request->Calle,
-            'Numero_Calle'          => $request->Numero_Calle,
-            'Codigo_Postal'         => $request->Codigo_Postal,
-            'Ciudad_Delegacion'     => $request->Ciudad_Delegacion,
-            'Proveedor_Activo'      => 1 
+            'nombre' => 'required|max:50',
+            'descripcion' => 'required|max:100',
+            'telefono' => 'required|max:15',
+            'correo' => 'required|email|max:50',
+            'direccion' => 'required|max:150',
+            'ciudad' => 'required|max:50',
         ]);
 
-        return redirect()->back()->with('message', 'Proveedor registrado correctamente.');
+        DB::table('Proveedores_Cat')->insert([
+            'Nombre_Proveedor'      => $request->nombre,
+            'Descripcion_Proveedor' => $request->descripcion,
+            'Telefono_Proveedor'    => $request->telefono,
+            'Correo_Proveedor'      => $request->correo,
+            'Direccion_Completa'    => $request->direccion,
+            'Ciudad_Estado'         => $request->ciudad,
+            'Proveedor_Activo'      => 1
+        ]);
+
+        return redirect()->back()->with('message', 'Proveedor guardado.');
     }
 
     public function update(Request $request, $id)
     {
-        $proveedor = Proveedores_Cat::findOrFail($id);
-        $proveedor->update($request->all());
+        DB::table('Proveedores_Cat')
+            ->where('ID_Proveedor', $id)
+            ->update([
+                'Nombre_Proveedor'      => $request->nombre,
+                'Descripcion_Proveedor' => $request->descripcion,
+                'Telefono_Proveedor'    => $request->telefono,
+                'Correo_Proveedor'      => $request->correo,
+                'Direccion_Completa'    => $request->direccion,
+                'Ciudad_Estado'         => $request->ciudad,
+            ]);
 
-        return redirect()->back()->with('message', 'Proveedor actualizado.');
+        return redirect()->back();
     }
 
     public function destroy($id)
     {
-        $proveedor = Proveedores_Cat::findOrFail($id);
-        $proveedor->update(['Proveedor_Activo' => 0]);
-        return redirect()->back()->with('message', 'Proveedor desactivado.');
+        // Borrado lógico para no romper integridad de inventario
+        DB::table('Proveedores_Cat')
+            ->where('ID_Proveedor', $id)
+            ->update(['Proveedor_Activo' => 0]);
+
+        return redirect()->back();
     }
 }
