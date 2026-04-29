@@ -19,7 +19,11 @@ const showingNavigationDropdown = ref(false);
                         <div class="flex">
                             <div class="flex shrink-0 items-center">
                                 <Link :href="route('dashboard')">
-                                    <ApplicationLogo class="block h-9 w-auto fill-current text-gray-800" />
+                                    <img 
+                                        src="/images/logo_la_moderna.png" 
+                                        alt="La Moderna" 
+                                        class="block h-12 w-auto transition hover:scale-105 duration-300 drop-shadow-sm" 
+                                    />
                                 </Link>
                             </div>
 
@@ -46,7 +50,6 @@ const showingNavigationDropdown = ref(false);
                         </div>
 
                         <div class="hidden sm:ms-6 sm:flex sm:items-center space-x-4">
-                            
                             <div class="relative">
                                 <Dropdown align="right" width="64">
                                     <template #trigger>
