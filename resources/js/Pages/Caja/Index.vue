@@ -13,22 +13,21 @@ const form = useForm({
 });
 
 const abrirCaja = () => {
+    if (!form.id_caja_fisica) return alert('Selecciona una caja física');
     form.post(route('caja.abrir'), {
         onSuccess: () => alert('¡Caja abierta!')
     });
 };
 
-// --- EL PROCESO DE CIERRE DE INGENIERÍA ---
 const finalizarTurnoCompleto = () => {
     if (confirm('¿Cerrar turno y descargar reporte?')) {
-        // 1. Abrimos la descarga en una pestaña aparte
-        window.open(route('caja.descargar.pdf'), '_blank');
+        const urlDescarga = route('caja.descargar.pdf') + `?id_session=${props.sesion_activa.ID_Session}`;
 
-        // 2. Cerramos la sesión en la DB usando Inertia
-        // Esto hará que sesion_activa pase a null y cambie la vista
+        window.open(urlDescarga, '_blank');
+
         router.post(route('caja.cerrar.automatico'), {}, {
-            onSuccess: () => {
-                console.log("Sistema actualizado: Caja Cerrada");
+            onFinish: () => {
+                console.log("Turno finalizado y sesión cerrada");
             }
         });
     }
@@ -75,7 +74,9 @@ const finalizarTurnoCompleto = () => {
                         </p>
                     </div>
                     <div class="mt-10 flex gap-4 justify-center">
-                        <a :href="route('ventas.index')" class="bg-green-600 text-white px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest">IR A VENDER</a>
+                        <a :href="route('ventas.index')" class="bg-green-600 text-white px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest">
+                            IR A VENDER
+                        </a>
                         <button @click="finalizarTurnoCompleto" class="bg-red-600 text-white px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg">
                             REALIZAR CORTE (PDF)
                         </button>

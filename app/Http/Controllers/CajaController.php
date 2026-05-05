@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Caja_General;
@@ -31,7 +32,6 @@ class CajaController extends Controller
         return redirect()->route('caja.index'); 
     }
 
-    // --- ESTA FUNCIÓN CIERRA LA CAJA REALMENTE ---
     public function cerrarTurnoAutomatico()
     {
         DB::table('Caja_General')
@@ -44,16 +44,17 @@ class CajaController extends Controller
         return redirect()->route('caja.index')->with('success', 'Caja cerrada correctamente');
     }
 
-    public function descargarCorteCaja()
+    public function descargarCorteCaja(Request $request)
     {
-        // Solo generamos el PDF de las sesiones de hoy
+        $sessionId = $request->query('id_session');
+
         $sesiones = DB::select("
             SELECT cg.ID_Session, cc.Nombre_Caja, cg.Saldo_Inicial, 
                    cg.Ingresos_Totales, cg.Egresos_Totales, cg.Fecha_Apertura, cg.Estado_Caja
             FROM Caja_General cg 
             JOIN Cajas_Cat cc ON cg.ID_Caja_Fisica = cc.ID_Caja_Fisica 
-            WHERE CAST(cg.Fecha_Apertura AS DATE) = CAST(GETDATE() AS DATE)
-        ");
+            WHERE cg.ID_Session = ?
+        ", [$sessionId]);
 
         foreach ($sesiones as $s) {
             $s->productos = DB::select("
@@ -67,6 +68,6 @@ class CajaController extends Controller
         }
 
         $pdf = Pdf::loadView('pdf.corte_caja', compact('sesiones'));
-        return $pdf->download('Corte_Diario_LaModerna_'.date('d-m-Y').'.pdf');
+        return $pdf->download('Corte_Sesion_'.$sessionId.'_'.date('d-m-Y').'.pdf');
     }
 }
