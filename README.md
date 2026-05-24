@@ -1,92 +1,85 @@
-# Gestor de punto de ventas e inventario 
-## Instalacion 
+# Gestor de Punto de Ventas e Inventario
 
-### Paso 1 : Crear proyecto en Laravel
-Instalacion de composer:
+Sistema de gestión de ventas, inventario y caja hecho con **Laravel** (backend/API) y **Vue.js** (frontend SPA) utilizando **Laravel Breeze**.
 
+## Instalación y ejecución
+
+### 1. Clonar el repositorio
 ```bash
-    composer create-project laravel/laravel gestor-tienda
+git clone https://github.com/Amonwill/Tienda.git
+cd Tienda
 ```
-Despues ingresa a la carpeta creada:
 
+### 2. Instalar dependencias backend (Laravel)
+Asegúrate de tener `composer` instalado.
 ```bash
-    cd gestor-tienda
+composer install
 ```
 
-### Paso 2 : Iniciar proyecto con Breeze + Vue
-Descarga de las herramientas necesarias con el siguiente comando en consola:
-
+### 3. Instalar dependencias frontend
+Asegúrate de tener `node` y `npm` instalados.
 ```bash
-    composer require laravel/breeze --dev
+npm install
 ```
 
-Usa Vue como frontend:
-
+### 4. Crear y configurar el archivo de entorno
+Copia el archivo `.env.example` como `.env` y ajusta los datos de conexión a la base de datos:
 ```bash
-    php artisan breeze:install vue
+cp .env.example .env
 ```
+Edita `.env` con tus credenciales de base de datos.
 
-### Paso 3 : Node 
-Instala Node y dependencias:
-
+### 5. Generar clave de aplicación
 ```bash
-    npm install
-    php artisan migrate
+php artisan key:generate
 ```
 
-### Paso 4 : Levantar proyecto para pruebas
-puedes hacer uso de dos consolas donde usaremos los siguientes comandos:
-
-consola 1 (Backend):
-```bash 
-    php artisan serve
-```
-
-consola 2 (Frontend):
-```bash 
-    npm run dev
-```
-
-## Creacion de base de datos desde VS Code
-
-### Creacion de tablas desde la consola de vs Code
-
-Ejecuta linea por linea para crear migraciones de cada una de las tablas, estas se crearan de manera automatica:
-
+### 6. Migrar la base de datos
 ```bash
-    php artisan make:model Clientes_Cat -m
-    php artisan make:model Proveedores_Cat -m
-    php artisan make:model Lotes_Cat -m
-    php artisan make:model Productos_Cat -m
-    php artisan make:model Cajas_Cat -m
-    php artisan make:model Caja_General -m
-    php artisan make:model Ventas -m
-    php artisan make:model Detalle_Ventas -m
-    php artisan make:model Bandeja_Alertas -m
+php artisan migrate
 ```
-Despues de generar las migraciones, genera los controlladores a traves de la consola:
 
+### 7. (Opcional) Instalar Breeze + Vue (si no está instalado)
 ```bash
-    php artisan make:controller ProductoController
-    php artisan make:controller VentaController
-    php artisan make:controller CajaController
-    php artisan make:controller ProveedorController 
+composer require laravel/breeze --dev
+php artisan breeze:install vue
 ```
 
-## Ventanas
+### 8. Levantar el servidor
+En una terminal (backend):
+```bash
+php artisan serve
+```
+En otra terminal (frontend):
+```bash
+npm run dev
+```
 
-### Ventas
-Ventana principal de ventas
-<img width="1919" height="911" alt="image" src="https://github.com/user-attachments/assets/2fb3cfea-c68b-46de-9677-2876f0d329df" />
+---
 
+## Comandos útiles para desarrollo
 
-### Cajas
-Abrir una caja
-<img width="1919" height="911" alt="image" src="https://github.com/user-attachments/assets/c537b5d6-a4fa-48b6-b247-0326f4cc85ae" />
-Caja abierta 
-<img width="1919" height="911" alt="image" src="https://github.com/user-attachments/assets/2ad0a42d-f26c-4ceb-85be-f3fc99ce4949" />
-Corte de caja
-<img width="1919" height="911" alt="image" src="https://github.com/user-attachments/assets/ce7ac7b2-34c0-41e7-b8de-3811f577b45f" />
+- Crear modelos y sus migraciones:
+  ```bash
+  php artisan make:model NombreModelo -m
+  ```
+- Crear controladores:
+  ```bash
+  php artisan make:controller NombreController
+  ```
 
+## Frameworks y dependencias usadas
 
+- **Laravel**: Backend/API, migraciones, autenticación, ORM Eloquent.
+- **Laravel Breeze**: Starter kit para autenticación y scaffolding.
+- **Vue.js**: Frontend SPA integrada.
+- **Node.js/NPM**: Gestión de assets y dependencias JS.
+- **Composer**: Gestión de dependencias PHP.
 
+## Capturas de pantalla
+
+---
+
+## Notas
+- Recuerda iniciar los servicios de base de datos (MySQL/MariaDB).
+- Revisa las migraciones y controladores para adaptar o ampliar funcionalidades.
